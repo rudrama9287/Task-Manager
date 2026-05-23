@@ -14,20 +14,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (projectForm) {
         projectForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = document.getElementById('project-name').value;
+            const title = document.getElementById('proj-title').value;
             const description = document.getElementById('project-desc').value;
             
             try {
-                const project = await fetchAPI('/projects', {
-                    method: 'POST',
-                    body: JSON.stringify({ name, description })
-                });
+                // If users selected, map their IDs as integers
+                const selectedUsers = Array.from(document.getElementById('project-users').selectedOptions).map(opt => parseInt(opt.value, 10));
                 
-                // If users selected, assign them
-                const selectedUsers = Array.from(document.getElementById('project-users').selectedOptions).map(opt => opt.value);
-                for (const userId of selectedUsers) {
-                    await fetchAPI(`/projects/${project.id}/assign/${userId}`, { method: 'POST' });
-                }
+                await fetchAPI('/projects', {
+                    method: 'POST',
+                    body: JSON.stringify({ title, description, member_ids: selectedUsers })
+                });
 
                 const modal = bootstrap.Modal.getInstance(document.getElementById('projectModal'));
                 modal.hide();
@@ -66,12 +63,11 @@ async function loadProjects() {
         
         tbody.innerHTML = projects.map(p => `
             <tr>
-                <td><strong>${p.name}</strong></td>
+                <td><strong>${p.title}</strong></td>
                 <td class="text-muted">${p.description || '-'}</td>
                 <td>
                     <div class="d-flex gap-2">
                         ${role === 'admin' ? `
-                            <button class="btn btn-sm btn-outline-primary" onclick="showAssignModal(${p.id})">Assign</button>
                             <button class="btn btn-sm btn-outline-danger" onclick="deleteProject(${p.id})">Delete</button>
                         ` : '<span class="badge bg-light text-dark">View Only</span>'}
                     </div>

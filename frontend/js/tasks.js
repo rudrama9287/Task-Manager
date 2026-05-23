@@ -51,7 +51,7 @@ async function loadUsersAndProjects() {
             userSelect.innerHTML = users.map(u => `<option value="${u.id}">${u.name} (${u.role})</option>`).join('');
         }
         if (projectSelect) {
-            projectSelect.innerHTML = projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            projectSelect.innerHTML = projects.map(p => `<option value="${p.id}">${p.title}</option>`).join('');
         }
     } catch (err) {
         console.error("Failed to load assignment data", err);
